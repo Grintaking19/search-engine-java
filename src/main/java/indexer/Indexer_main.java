@@ -30,8 +30,10 @@ public class Indexer_main {
            // pageRanker ranker = new pageRanker(1,0.85);
         List<UrlData> toBeIndexed =  new ArrayList<>();
           //  for (int i=0;i<3;i++){
-                toBeIndexed.add(new UrlData("fetch-request-with-token-in-header.htm","D:\\CUFE\\apt\\project\\searchEngine\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
-            //}
+                toBeIndexed.add(new UrlData("fetch-request-with-token-in-header.htm",(String)(System.getProperty("user.dir")) +"\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
+        toBeIndexed.add(new UrlData("fetch-request-with-token-in.htm","D:\\CUFE\\apt\\project\\searchEngine\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
+
+        //}
 
             ExecutorService executor = Executors.newFixedThreadPool(20);
             for(int i = 0 ; i < toBeIndexed.size() ; i++)
