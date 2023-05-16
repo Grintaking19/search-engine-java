@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
     <dependencies> <!-- https://mvnrepository.com/artifact/org.mongodb.wso2/mongo-java-driver -->
 
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
