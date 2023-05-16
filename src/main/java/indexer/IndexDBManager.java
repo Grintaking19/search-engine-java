@@ -3,10 +3,7 @@ package indexer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -49,5 +46,23 @@ public class IndexDBManager {
                     .append("position", entry.getValue().position));
         }
         wordsCollection.insertMany(indexerEntry);
+    }
+
+    public SearchWord getSearchWordExact(String keyword) {
+        MongoCursor<Document> cur =  wordsCollection.find(new BasicDBObject("word", keyword)).cursor();
+        SearchWord searchWord = new SearchWord();
+        searchWord.word = keyword;
+        while (cur.hasNext()) {
+            Document doc = cur.next();
+            WordData currentData = new WordData((Document) doc.get("position"));
+            currentData.url = (String) doc.get("url");
+            currentData.count = (int) doc.get("count");
+            currentData.lengthOfDoc = (int) doc.get("lengthOfDocument");
+            currentData.popularity = (double) doc.get("popularity");
+            currentData.filepath = (String) doc.get("filepath");
+            searchWord.data.add(currentData);
+        }
+        searchWord.df = searchWord.data.size();
+        return searchWord;
     }
 }
