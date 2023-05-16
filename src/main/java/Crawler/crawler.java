@@ -7,6 +7,8 @@ import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,7 +20,7 @@ public class crawler implements Runnable{
     //max depth of crawling
 //    private static final int MAX_DEPTH=3;
     MongoDBClass dataBaseCrawler;
-    private static final int MAX_NUMBER_OF_LINKS=600;
+    private static final int MAX_NUMBER_OF_LINKS=500;
     private Object countUrls;
     private Queue<String> urlsQueue = new LinkedList<>();
     private int id;
@@ -44,43 +46,86 @@ public class crawler implements Runnable{
         Document doc;
         String next_link;
         String filePath;
+        boolean limitReached;
+        boolean linkExist;
         //while the queue of urls still have urls then crawl the top of the queue
         while(! this.urlsQueue.isEmpty()){
             //check if we reached the MAX_NUMBER_OF_LINKS crawled
-            synchronized (this.countUrls) {
-                if (visitedUrls.size() > MAX_NUMBER_OF_LINKS) {
-                    System.out.println(visitedUrls.size());
-                    break;
-                }
+            synchronized (this.visitedUrls) {
+                limitReached = visitedUrls.size() >= MAX_NUMBER_OF_LINKS;
             }
+            if (limitReached) {
+                System.out.println(visitedUrls.size());
+                break;
+            }
+
             popedUrl=urlsQueue.remove();
 
+            //get the request from the url
             doc=request(popedUrl);
             if(doc !=null){
                 //download html page
                 filePath=downloadHtmlDoc(popedUrl);
                 if(filePath !=""){
                     //we want to add this popedurl to the collection of htmlDocs in the database
-                    synchronized (this.dataBaseCrawler){
-                        this.dataBaseCrawler.insertRecord(popedUrl,filePath);
+
+                    synchronized (this.visitedUrls){
+                        if(this.visitedUrls.contains(popedUrl)==false && this.visitedUrls.size()<MAX_NUMBER_OF_LINKS) {
+                            this.dataBaseCrawler.insertRecord(popedUrl, filePath);
+                            //add the popped url to visitedUrls list
+                            this.addUrlToVisitedUrls(popedUrl);
+                        }
                     }
+
                 }
                 else{
-                    System.out.println("Error empty link!");
+                    continue;
+                    //System.out.println("Error empty link!");
                 }
-                //add the popped url to visitedUrls list
-                this.addUrlToVisitedUrls(popedUrl);
+
                 for(Element link: doc.select("a[href]")) {
                     next_link=link.absUrl("href");
                     //check if this link is visited before inserting in urlsQueue
-                    if(this.visitedUrls.contains(next_link)==false){
-                        //crawl(level+1,next_link);
-                        urlsQueue.add(next_link);
+                    //normalize the url
+                    try {
+                        next_link=normalizeUrl(next_link);
+                    } catch (URISyntaxException e) {
+                        //throw new RuntimeException(e);
+                        continue;
+                    } catch (MalformedURLException e) {
+                        //throw new RuntimeException(e);
+                        continue;
                     }
+                    if(next_link!="") {
+                        synchronized (this.visitedUrls) {
+                            linkExist = this.visitedUrls.contains(next_link);
+                        }
+                        if (!linkExist) {
+                            urlsQueue.add(next_link);
+                        }
+//                        synchronized (this.visitedUrls) {
+//                            if (this.visitedUrls.contains(next_link) == false) {
+//                                //crawl(level+1,next_link);
+//                                urlsQueue.add(next_link);
+//                            }
+//                        }
+                    }
+
                 }
             }
 
         }
+    }
+
+    public String normalizeUrl(String url) throws URISyntaxException, MalformedURLException {
+        String normalizedUrl="";
+        try {
+            URI uri = new URI(url).normalize();
+            normalizedUrl = uri.toURL().toString();
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            //System.out.println("Invalid URL: " + url);
+        }
+        return normalizedUrl;
     }
     public static String removeSpecialCharacters(String str) {
         // Using regex to replace all special characters with an empty string
@@ -112,20 +157,20 @@ public class crawler implements Runnable{
         }
         // Exceptions
         catch (MalformedURLException mue) {
-            System.out.println("MalformedURL Exception occurred");
+            //System.out.println("MalformedURL Exception occurred");
         } catch (IOException ie) {
-            System.out.println("IOException occurred");
+            //System.out.println("IOException occurred");
         }
         return"";
     }
     //this function takes a url and lock the visitedUrls list to forbid race condition
     private  void addUrlToVisitedUrls(String url){
-        if(this.visitedUrls.contains(url)==false && this.visitedUrls.size()<MAX_NUMBER_OF_LINKS)
-        {
-            synchronized(visitedUrls){
+//        if(this.visitedUrls.contains(url)==false && this.visitedUrls.size()<MAX_NUMBER_OF_LINKS)
+//        {
+
                 this.visitedUrls.add(url);
-            }
-        }
+
+//        }
 
     }
 //    private  void incrementCountUrlsAndCheckMax(){
@@ -140,10 +185,10 @@ public class crawler implements Runnable{
             Connection con= Jsoup.connect(url);
             Document doc=con.get();
             if(con.response().statusCode()==200){
-                System.out.println("\n**bot id: "+id+" recieved webpage at url: "+url);
-                String title= doc.title();
-                System.out.println(title);
-                this.visitedUrls.add(url);
+                //System.out.println("\n**bot id: "+id+" recieved webpage at url: "+url);
+                //String title= doc.title();
+                //System.out.println(title);
+                //this.visitedUrls.add(url);
                 return doc;
             }
             return null;
