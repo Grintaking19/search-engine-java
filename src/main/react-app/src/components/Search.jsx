@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import MainSearchPage from './mainSearchPage';
-import {SearchResultPage} from './SearchResultPage';
+import { SearchResultPage } from './SearchResultPage';
 
 export default function Search() {
 
@@ -16,11 +16,12 @@ export default function Search() {
         )
           :
           (
-            <SearchResultPage search={search} />
+            //setSearch, setEnableSearch 
+            <SearchResultPage search={search} setSearch={setSearch} setEnableSearch={setEnableSearch} />
           )
-    }
-    
-    
+      }
+
+
     </>
   )
 

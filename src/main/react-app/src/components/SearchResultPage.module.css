@@ -52,6 +52,10 @@
 
 }
 
+.main-search-page--title :hover {
+  cursor: pointer;
+}
+
 /* .search-container {
   display: flex;
   flex-direction: column;
@@ -75,7 +79,7 @@
   outline: none;
   border: none;
   padding: 16px;
-  width: 450px;
+  width: 50%;
   border-top-left-radius: 19px;
   border-bottom-left-radius: 19px;
   font-size: 20px;
@@ -164,3 +168,9 @@
   margin-bottom: 20px;
   margin-top: 20px;
 }
+
+/* @media screen and (max-width: 768px) {
+  .search-result--item-container {
+    width: 40%;
+  }
+} */

@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types'
 import styles from './SearchResultPage.module.css'
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
 import suggestions from './data-suggest.json'
 import { useEffect, useState } from 'react'
 import data from './data.json'
 
-export function SearchResultPage({ search, setSearch }) {
+export function SearchResultPage({ search, setSearch, setEnableSearch }) {
   const [searchResult, setSearchResult] = useState(data);
   const [searchResultCount, setSearchResultCount] = useState(0);
   const [searchResultTime, setSearchResultTime] = useState(0);
   const [inputValue, setInputValue] = useState(search);
   const [suggestionFilter, setSuggestionFilter] = useState([]);
 
+  // This is for the first time load or refresh page or go back to this page
 
 
   const handleFilter = (event) => {
@@ -49,15 +51,20 @@ export function SearchResultPage({ search, setSearch }) {
     enableSearch(true);
   }
 
+  const close = () => {
+    setInputValue('');
+    setSuggestionFilter([]);
+  }
+
 
   return (
     <div className={styles["search-result-page"]}>
       <div className={styles['nav-bar']}>
-        <h1 className={styles["main-search-page--title"]}>Wiki Links</h1>
+        <h1 className={styles["main-search-page--title"]} onClick={() => { setEnableSearch(false) }}>Wiki Links</h1>
         <div className={styles["search-bar-container"]}>
           <input className={styles["search-bar"]} type="text" onChange={handleFilter} onKeyDown={handleEnter} value={inputValue} />
           <div className={styles["search-icon"]}>
-            <SearchIcon />
+            {search.length > 0 ? <CloseIcon onClick={() => close()} /> : <SearchIcon />}
           </div>
         </div>
       </div>

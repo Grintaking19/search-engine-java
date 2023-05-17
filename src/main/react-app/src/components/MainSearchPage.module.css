@@ -74,6 +74,10 @@
   border-bottom-right-radius: 19px;
 }
 
+.search-icon:hover {
+  cursor: pointer;
+}
+
 .searchIcon svg {
   font-size: 35px;
   color: #3D6E7F;
