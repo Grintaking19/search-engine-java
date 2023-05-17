@@ -6,10 +6,9 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 //import javax.swing.text.Document;
@@ -31,13 +30,66 @@ public class MongoDBClass {
         this.htmlDocsCollection=mongoDatabase.getCollection(("htmlDocs"));
         this.urlsQueueCollection=mongoDatabase.getCollection(("unvisitedUrlsQueue"));
     }
+    public class VisitedUrlData {
+        private String url;
+        private String filePath;
+        private int countChildren;
+        private Set<String> Parents;
+
+        public VisitedUrlData(String url, String filePath, Set<String> parents, int countChildren) {
+            this.url = url;
+            this.filePath = filePath;
+            this.countChildren = countChildren;
+            Parents = parents;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getFilePath() {
+            return filePath;
+        }
+
+        public int getCountChildren() {
+            return countChildren;
+        }
+
+        public Set<String> getParents() {
+            return Parents;
+        }
+    }
     //function that insert a url, the file path into the database
-    public void insertVisitedUrlRecord(String link, String filePath){
+    public void insertVisitedUrlRecord(String link, String filePath, Set<String> Parents){
+        //convert set to list
+        List<String> parentsList = new ArrayList<>(Parents);
         Document doc=new Document("url",link);
         doc.append("filePath",filePath);
+        doc.append("parents",parentsList);
+        doc.append("childrenCount",0);
         htmlDocsCollection.insertOne(doc);
 
     }
+    public void updateChildCountInVisitedUrl(String popedUrl,int countChildren){
+        Document search=new Document("url",popedUrl);
+        if (search!=null) {
+            Bson updateCountChildren=new Document("childrenCount",countChildren);
+            Bson updateOperation=new Document("$set",updateCountChildren);
+            htmlDocsCollection.updateOne(search,updateOperation);
+        }
+    }
+    public void updateParentsListInVisitedUrlRecord(String link,Set<String> Parents){
+        //convert set to list
+        List<String> parentsList = new ArrayList<>(Parents);
+        Document search=new Document("url",link);
+        if (search!=null) {
+            Bson updateParentsList=new Document("parents",parentsList);
+            Bson updateOperation=new Document("$set",updateParentsList);
+            htmlDocsCollection.updateOne(search,updateOperation);
+        }
+
+    }
+
     //insert at end of the collection ( queue )
     public void insertUnvisitedUrlInQueue(String link){
         Document doc=new Document("url",link);
@@ -45,23 +97,36 @@ public class MongoDBClass {
     }
 
     //function get the arrayList of visitedUrls from the collection "htmlDocsCollection"
-    public ArrayList<String> getVisitedUrlsFromCollection() {
+    public ArrayList<VisitedUrlData> getVisitedUrlsFromCollection() {
         MongoCollection<Document> visitedUrlsCollection = this.mongoDatabase.getCollection("htmlDocs");
         // Find all documents in the collection and add the string value to an ArrayList
-        ArrayList<String> visitedUrlsList = new ArrayList<>();
-        String url;
+        //ArrayList<String> ParentsUrlsList = new ArrayList<>();
+        String urll;
+        String filePathh;
+        List<String> parentsUrlsList = new ArrayList<>();
+        int count;
+        ArrayList<VisitedUrlData> AllData=new ArrayList<>();
         for (Document doc : visitedUrlsCollection.find()) {
-             url= doc.getString("url");
-            visitedUrlsList.add(url);
+
+            urll= doc.getString("url");
+            filePathh=doc.getString("filePath");
+            parentsUrlsList=doc.get("parents",List.class);
+            //visitedUrlsList.add(url);
+            count=doc.getInteger("childrenCount");
+            // Convert the ArrayList to a HashSet
+            Set<String> parentsSet = new HashSet<String>(parentsUrlsList);
+            VisitedUrlData data=new VisitedUrlData(urll,filePathh,parentsSet,count);
+            AllData.add(data) ;
         }
-        return visitedUrlsList;
+
+        return AllData;
     }
 
     //function get the arrayList of visitedUrls from the collection "urlsQueueCollection"
-    public Queue<String> getUrlsQueueFromCollection() {
+    public ArrayList<String> getUrlsQueueFromCollection() {
         MongoCollection<Document> visitedUrlsCollection = this.mongoDatabase.getCollection("unvisitedUrlsQueue");
         // Find all documents in the collection and add the string value to an ArrayList
-        Queue<String> unvisitedUrlsQueue = new LinkedList<>();
+        ArrayList<String> unvisitedUrlsQueue = new ArrayList<>();
         String url;
         for (Document doc : visitedUrlsCollection.find()) {
             url= doc.getString("url");
