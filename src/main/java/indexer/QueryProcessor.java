@@ -45,7 +45,7 @@ public class QueryProcessor {
             searchedWords = PhraseSearch(searchedWords,S);
         }
        // Ranker rank = new Ranker(RankerDB.getDocumentsSize(), searchedWords);
-        //LinkedHashMap<UrlData, Double> reverseSortedMap = rank.sortSearched();
+        //LinkedHashMap<String, Double> reverseSortedMap = rank.sortSearched();
         return null ;//reverseSortedMap;
     }
 
