@@ -1,10 +1,10 @@
 import styles from './mainSearchPage.module.css';
 import SearchIcon from '@material-ui/icons/Search';
 import suggestions from './data-suggest.json'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ProtoTypes from 'prop-types';
 
-export default function MainSearchPage({setSearch, enableSearch}) {
+export default function MainSearchPage({setSearch, setEnableSearch}) {
 
   const [suggestionFilter, setSuggestionFilter] = useState([]);
   const handleFilter = (event) => {
@@ -32,8 +32,13 @@ export default function MainSearchPage({setSearch, enableSearch}) {
   const handleSearch = (word) => {
     console.log(word);
     setSearch(word);
-    enableSearch(true);
+    setEnableSearch(true);
   }
+
+  // This is for the first time load or refresh page or go back to this page
+  useEffect(() => {
+    setEnableSearch(false);
+  }, [])
 
   return (
     <div className={styles["main-search-page"]}>
@@ -68,5 +73,5 @@ export default function MainSearchPage({setSearch, enableSearch}) {
 
 MainSearchPage.propTypes = {
   setSearch: ProtoTypes.func.isRequired,
-  enableSearch: ProtoTypes.func.isRequired
+  setEnableSearch: ProtoTypes.func.isRequired
 }
