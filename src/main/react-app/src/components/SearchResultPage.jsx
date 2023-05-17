@@ -12,7 +12,7 @@ export function SearchResultPage({ search, setSearch }) {
   const [inputValue, setInputValue] = useState(search);
   const [suggestionFilter, setSuggestionFilter] = useState([]);
 
-  
+
 
   const handleFilter = (event) => {
     setInputValue(event.target.value);
@@ -74,9 +74,9 @@ export function SearchResultPage({ search, setSearch }) {
                   {
                     searchResult.map((result, index) => {
                       return (
-                        <div key={index} className={styles['search-result--item']}>
+                        <div key={index} className={styles['search-result--item-container']}>
                           <a href={result.link} className={styles['search-result--item-title']}>{result.title}</a>
-                          <p className={styles['search-result--item-content']}>{result.content}</p>
+                          <p className={styles['search-result--item-content']}>{result.country}</p>
                         </div>
                       )
                     })

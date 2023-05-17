@@ -13,6 +13,12 @@
   min-height: 100vh;
   background-color: #FCF9F8;
   width: 100vw;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.search-result-page ::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-bar {
@@ -107,7 +113,9 @@
   flex: 0.5;
   height: 100vh;
   background-color: #FCF9F8;
+
 }
+
 
 .page-space-right {
   flex: 200px;
@@ -124,10 +132,35 @@
 
 }
 
+/* .search-result-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+} */
+
 .search-result {
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100vh;
+
+}
+
+/* .search-result ::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+} */
+
+
+.search-result--item-title {
+  font-size: 22px;
+}
+
+.search-result--item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
