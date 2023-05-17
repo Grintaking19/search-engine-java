@@ -39,7 +39,11 @@ public class RelevanceRanker
     // IDF is constant for each word,so I put it in an arraylist as it never changes for same word
     public void calculate_IDF (int wordindex)
     {
-        this.IDF[wordindex] = log(this.ndocs/this.words.get(wordindex).df);
+        if(this.words.get(wordindex).df!=0) {
+            this.IDF[wordindex] = log(this.ndocs / this.words.get(wordindex).df);
+        }else{
+            this.IDF[wordindex]=0;
+        }
     }
     // Constructor
     public RelevanceRanker(int docs,List<SearchWord> searchwords)

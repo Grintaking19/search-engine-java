@@ -49,7 +49,7 @@ public class Indexer implements Runnable{
     public Indexer(UrlData urlData, IndexDBManager searchIndexDB) throws IOException {
 
         CurrentURL = urlData.URL;
-        File input = new File(urlData.FilePath);
+        File input = new File((String)(System.getProperty("user.dir"))+"//html//"+ urlData.FilePath);
         CurrentDoc = Jsoup.parse(input,"UTF-8");
         SearchIndexDB = searchIndexDB;
         this.urlData=urlData;

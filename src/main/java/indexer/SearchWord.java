@@ -1,8 +1,11 @@
 package indexer;
 
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 public class SearchWord {
     public String word;
     public int df;

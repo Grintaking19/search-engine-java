@@ -6,13 +6,13 @@ package indexer;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 //import Ranker.RankerDBManager;
+import Ranker.DBRanker;
+import Ranker.RelevanceRanker;
+import lombok.AllArgsConstructor;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,14 +21,16 @@ import org.jsoup.select.Elements;
 
 public class QueryProcessor {
     IndexDBManager SearchIndexDB;
-  //  RankerDBManager RankerDB;
+    DBRanker RankerDB;
+
     public QueryProcessor() throws UnknownHostException {
         SearchIndexDB = new IndexDBManager();
-       // RankerDB = new RankerDBManager();
+        RankerDB = new DBRanker();
     }
 
     public LinkedHashMap<UrlData, Double> getResults(String S) throws IOException {
         //Check if it is a phaseSearch or not
+
 
         List <String> ListOfWords = List.of(S.replaceAll("\"","").split(" "));
         List <String> ListOfQueries = new ArrayList<>();
@@ -38,33 +40,42 @@ public class QueryProcessor {
         {
             searchedWords.add(SearchIndexDB.getSearchWordExact(Stemmer.stemWord(Word)));
         }
+        System.out.println("jfdjfdjhfghjfhjkhgfdjkhdgkfjkjdf     searchedData");
+        System.out.println(S);
+
         //if it is a phrase update
         if(S.startsWith("\"") && S.endsWith("\""))
         {
+            System.out.println("searchedData");
             S = S.replaceAll("\"","");
             searchedWords = PhraseSearch(searchedWords,S);
         }
-       // Ranker rank = new Ranker(RankerDB.getDocumentsSize(), searchedWords);
-        //LinkedHashMap<String, Double> reverseSortedMap = rank.sortSearched();
-        return null ;//reverseSortedMap;
+        RelevanceRanker  rank = new RelevanceRanker(RankerDB.getDocumentsSize(), searchedWords);
+        LinkedHashMap<UrlData, Double> reverseSortedMap = rank.sort_documents();
+        return reverseSortedMap;
     }
 
 
     //Function very bad needs to be refactored
     public List<SearchWord> PhraseSearch(List <SearchWord> searchWords , String Phase) throws IOException {
-        List <SearchWord> PhraseSearchWord = new ArrayList<>();
+        Set<SearchWord> PhraseSearchWord = new HashSet<>();
+        Set<String> check = new HashSet<>();
+
         for(SearchWord searchWord : searchWords){
             SearchWord SWord = new SearchWord();
             SWord.word = searchWord.word;
             for(WordData url : searchWord.data){
                 //Now we will check if this Phase exists exactly in the Document we will Search everything
                 //We will Get first Sentence that contains this word
-                File input = new File(url.filepath);
+                File input = new File((String)(System.getProperty("user.dir"))+"//html//"+url.filepath);
                 Document doc = Jsoup.parse(input,"UTF-8");
                 Boolean isFound = false;
                 if(doc.title().contains(Phase))
                 {
-                    SWord.data.add(url);
+                    if(!check.contains(url.url)) {
+                        check.add(url.url);
+                        SWord.data.add(url);
+                    }
                     continue;
                 }
                 //Check P
@@ -72,8 +83,9 @@ public class QueryProcessor {
                 for(String Paragraph : ParagraphText)
                 {
                     if(Paragraph.contains(Phase))
-                    {
-                        SWord.data.add(url);
+                    {if(!check.contains(url.url)) {
+                        check.add(url.url);
+                         SWord.data.add(url);}
                         isFound = true;
                         break;
                     }
@@ -88,7 +100,9 @@ public class QueryProcessor {
                 {
                     if(Paragraph.contains(Phase))
                     {
-                        SWord.data.add(url);
+                        if(!check.contains(url.url)) {
+                            check.add(url.url);
+                        SWord.data.add(url);}
                         isFound = true;
                         break;
                     }
@@ -107,8 +121,9 @@ public class QueryProcessor {
                     for(String Paragraph : Text)
                     {
                         if(Paragraph.contains(Phase))
-                        {
-                            SWord.data.add(url);
+                        {if(!check.contains(url.url)) {
+                            check.add(url.url);
+                            SWord.data.add(url);}
                             isFound = true;
                             break;
                         }
@@ -128,9 +143,11 @@ public class QueryProcessor {
                 {
                     if(Paragraph.contains(Phase))
                     {
-                        SWord.data.add(url);
+                        if(!check.contains(url.url)) {
+                            check.add(url.url);
+                        SWord.data.add(url);}
                         isFound = true;
-                        continue;
+                        break;
                     }
                 }
                 if(isFound)
@@ -143,7 +160,9 @@ public class QueryProcessor {
                 {
                     if(Paragraph.contains(Phase))
                     {
-                        SWord.data.add(url);
+                        if(!check.contains(url.url)) {
+                            check.add(url.url);
+                        SWord.data.add(url);}
                         break;
                     }
                 }
@@ -154,8 +173,9 @@ public class QueryProcessor {
             }
             PhraseSearchWord.add(SWord);
         }
-
-        return PhraseSearchWord;
+        System.out.println("PhraseSearchWord  "+PhraseSearchWord);
+        List<SearchWord> phraseSearchWordList = new ArrayList<>(PhraseSearchWord);
+        return phraseSearchWordList;
     }
 
     public String getDescription(Document doc , String word){

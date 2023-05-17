@@ -21,11 +21,11 @@ public class MongoDBClass {
     MongoCollection htmlDocsCollection;
     MongoCollection urlsQueueCollection;
     public MongoDBClass() {
-        this.connectionString="mongodb+srv://karimyasser34:3uRq0QAZoqUbUPzN@cluster0.8ikdynj.mongodb.net/";
+        this.connectionString="mongodb://localhost:27017";
         this.clientURI=new MongoClientURI(connectionString);
         this.mongoClient=new MongoClient(clientURI);
         //connect to db
-        this.mongoDatabase=mongoClient.getDatabase("Crawler");
+        this.mongoDatabase=mongoClient.getDatabase("Indexer");
         //get access to collections
         this.htmlDocsCollection=mongoDatabase.getCollection(("htmlDocs"));
         this.urlsQueueCollection=mongoDatabase.getCollection(("unvisitedUrlsQueue"));

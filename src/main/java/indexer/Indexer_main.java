@@ -1,5 +1,8 @@
 package indexer;
 
+import Ranker.DBRanker;
+import Ranker.PageRanker;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -23,24 +26,36 @@ public class Indexer_main {
     public static void main(String[] args) throws IOException {
 
             Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
-            mongoLogger.setLevel(Level.SEVERE);
-          //  RankerDBManager RankerDB = new RankerDBManager();
-            IndexDBManager SearchIndexDB = new IndexDBManager();
+
+        com.mongodb.MongoClient mongoClient = new com.mongodb.MongoClient("localhost", 27017);
+        MongoDatabase database = mongoClient.getDatabase("Indexer");
+
+
+        MongoCollection<Document> wordsCollection = database.getCollection("keywords");
+
+        wordsCollection.deleteMany(new BasicDBObject("popularity",5));
+
+
+        mongoLogger.setLevel(Level.SEVERE);
+        DBRanker RankerDB = new DBRanker();
+        IndexDBManager SearchIndexDB = new IndexDBManager();
             ///Run PageRanker Algorithms
-           // pageRanker ranker = new pageRanker(1,0.85);
-        List<UrlData> toBeIndexed =  new ArrayList<>();
+            PageRanker ranker = new PageRanker(1,0.85);
+        List<UrlData> toBeIndexed =RankerDB.getAllURLsData()  ;
           //  for (int i=0;i<3;i++){
-                toBeIndexed.add(new UrlData("fetch-request-with-token-in-header.htm",(String)(System.getProperty("user.dir")) +"\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
-        toBeIndexed.add(new UrlData("fetch-request-with-token-in.htm","D:\\CUFE\\apt\\project\\searchEngine\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
+              //  toBeIndexed.add(new UrlData("fetch-request-with-token-in-header.htm",(String)(System.getProperty("user.dir")) +"\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
+       // toBeIndexed.add(new UrlData("fetch-request-with-token-in.htm","D:\\CUFE\\apt\\project\\searchEngine\\src\\main\\java\\files\\fetch-request-with-token-in-header.htm",5));
 
         //}
-
-            ExecutorService executor = Executors.newFixedThreadPool(20);
+        long time = (long) System.currentTimeMillis();
+            ExecutorService executor = Executors.newFixedThreadPool(100);
             for(int i = 0 ; i < toBeIndexed.size() ; i++)
             {
                 executor.execute(new Indexer(toBeIndexed.get(i),SearchIndexDB));
             }
             executor.shutdown();
+        time = (long) System.currentTimeMillis() - time;
+        System.out.println("Time taken to serialize invertedIndex matrix: " + time + " mSec.");
 
 
 

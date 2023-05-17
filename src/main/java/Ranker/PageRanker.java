@@ -7,8 +7,14 @@ import indexer.UrlData;
 public class PageRanker
 {
     MongoDBClass d;
+    {
+        d= new MongoDBClass();
+    }
     // This is used to call functions applied to the indexer database
     DBRanker RankerDB;
+    {
+        RankerDB= new DBRanker();
+    }
     // Key is the url and value is url_data through which we can access population
     public Map<String, UrlData> popularity_Map= new HashMap<String,UrlData>();
     // Key is the url and the value is set of parent urls referring to it
@@ -16,6 +22,7 @@ public class PageRanker
     public Map<String, Integer> refrenced_urls_from_parent= new HashMap<String,Integer>();
     public PageRanker(int iterations,double damping_factor) // Number of iteration to stop and damping factor is 0.85 at default
     {
+
         Set <String> Parents = null;  // To be updated
         Set <String> refrences = null; // To be updated with function
         double pagerank =0; // Initialized by zero

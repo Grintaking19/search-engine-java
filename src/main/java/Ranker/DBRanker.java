@@ -57,4 +57,9 @@ public class DBRanker
         return DataList;
     }
 
+    public int getDocumentsSize() {
+        BasicDBObject query = new BasicDBObject();
+        int size = (int)urlsCollection.countDocuments(query);
+        return size;
+    }
 }

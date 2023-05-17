@@ -241,7 +241,7 @@ public class crawler implements Runnable{
             String filePath = removeSpecialCharacters(trimLastNCharacters(link)) + ".html";
             URL url = new URL(link);
             BufferedReader readHtml = new BufferedReader(new InputStreamReader(url.openStream()));
-            BufferedWriter writeHtml = new BufferedWriter(new FileWriter("D:\\CUFE\\Spring 2023\\apt\\project\\htmlDocs\\" + filePath));
+            BufferedWriter writeHtml = new BufferedWriter(new FileWriter((String)(System.getProperty("user.dir"))+"\\html\\"+ filePath));
 
             // read each line from stream till end
             String docLine;
@@ -404,7 +404,7 @@ public class crawler implements Runnable{
     static ArrayList<String> readSeedUrlsFile() {
         ArrayList<String>seedUrlsQueue= new ArrayList<>();
         try {
-            File myObj = new File("D:\\CUFE\\Spring 2023\\apt\\intellijprojects\\search-engine\\src\\main\\java\\Crawler\\seedList.txt");
+            File myObj = new File((String)(System.getProperty("user.dir"))+"\\src\\main\\java\\Crawler\\seedList.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String url = myReader.nextLine();
@@ -468,7 +468,7 @@ public class crawler implements Runnable{
         //
         ArrayList<Set<String>> parentsList=new ArrayList<Set<String>>();
         // Add 12 empty Sets to the ArrayList
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 14; i++) {
             parentsList.add(new HashSet<String>());
         }
         ArrayList<Set<String>> visitedUrlsParentsList=new ArrayList<Set<String>>();

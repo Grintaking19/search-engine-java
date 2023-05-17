@@ -26,6 +26,7 @@
             <artifactId>mongo-java-driver</artifactId>
             <version>3.12.13</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
