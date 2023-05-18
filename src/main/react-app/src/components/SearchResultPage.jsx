@@ -4,16 +4,17 @@ import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 import suggestions from './data-suggest.json'
 import { useEffect, useState } from 'react'
-import data from './data.json'
+import axios from 'axios'
 
 export function SearchResultPage({ search, setSearch, setEnableSearch }) {
-  const [searchResult, setSearchResult] = useState(data);
+  const [searchResult, setSearchResult] = useState([]);
   const [searchResultCount, setSearchResultCount] = useState(0);
   const [searchResultTime, setSearchResultTime] = useState(0);
   const [inputValue, setInputValue] = useState(search);
   const [suggestionFilter, setSuggestionFilter] = useState([]);
-
+  const [page, setPage] = useState(1);
   // This is for the first time load or refresh page or go back to this page
+
 
 
   const handleFilter = (event) => {
@@ -26,10 +27,25 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
 
     // }
 
+
+
     useEffect(() => {
-      setSearchResult(data);
-      setSearchResultCount(data.length);
-      setSearchResultTime(0.1);
+      async function fetchData() {
+        try {
+          let now = new Date();
+          const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, search);
+          setSearchResult(response.pages);
+          setSearchResultCount(response.total_number);
+          //setSearchResultTime(0.1);
+          let later = new Date();
+          setSearchResultTime((later - now));
+        }
+        catch (err) {
+          console.log(err);
+        }
+      };
+      fetchData();
+
     }, [search])
 
     if (event.target.value === '') {
@@ -48,7 +64,7 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
   const handleSearch = (word) => {
     console.log(word);
     setSearch(word);
-    enableSearch(true);
+    setEnableSearch(true);
   }
 
   const close = () => {
@@ -82,8 +98,8 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
                     searchResult.map((result, index) => {
                       return (
                         <div key={index} className={styles['search-result--item-container']}>
-                          <a href={result.link} className={styles['search-result--item-title']}>{result.title}</a>
-                          <p className={styles['search-result--item-content']}>{result.country}</p>
+                          <a href={result.url} className={styles['search-result--item-title']}>{result.title}</a>
+                          <p className={styles['search-result--item-content']}>{result.discription}</p>
                         </div>
                       )
                     })
