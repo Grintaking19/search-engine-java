@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import styles from './SearchResultPage.module.css'
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+import { Pagination } from '@mui/material'
 import suggestions from './data-suggest.json'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -71,6 +72,21 @@ export function SearchResultPage({ search, setSearch, setEnableSearch, setSearch
     setSuggestionFilter([]);
   }
 
+  const handlePagination = async (event, value) => {
+    try {
+      let now = new Date();
+      const response = await axios.post(`http://localhost:8081/search?page=${value}&&pageSize=20`, { "query": search });
+      setSearchResult(response.pages);
+      setSearchResultCount(response.total_number);
+
+      let later = new Date();
+      setSearchResultTime((later - now));
+      setEnableSearch(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   return (
     <div className={styles["search-result-page"]}>
@@ -107,6 +123,7 @@ export function SearchResultPage({ search, setSearch, setEnableSearch, setSearch
               )
             })}
           </div>
+          <Pagination count={searchResultCount / 10} onChange={handlePagination} />
         </div>
 
         <div className={styles["page-space-right"]}>
