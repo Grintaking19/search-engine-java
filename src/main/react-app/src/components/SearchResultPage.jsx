@@ -29,24 +29,15 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
 
 
 
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          let now = new Date();
-          const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, search);
-          setSearchResult(response.pages);
-          setSearchResultCount(response.total_number);
-          //setSearchResultTime(0.1);
-          let later = new Date();
-          setSearchResultTime((later - now));
-        }
-        catch (err) {
-          console.log(err);
-        }
-      };
-      fetchData();
+    // useEffect(() => {
+    //   async function fetchData() {
 
-    }, [search])
+        
+    //   }
+    //   onsole.log("Fetching data...");
+    //   fetchData();
+
+    // }, [])
 
     if (event.target.value === '') {
       filteredSuggestions = [];

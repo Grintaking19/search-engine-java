@@ -4,11 +4,17 @@ import CloseIcon from '@material-ui/icons/Close';
 import suggestions from './data-suggest.json'
 import { useEffect, useState } from 'react'
 import ProtoTypes from 'prop-types';
+import axios from 'axios';
 
-
-export default function MainSearchPage({ setSearch, setEnableSearch }) {
+export default function MainSearchPage({ setSearch, setEnableSearch, search }) {
 
   const [suggestionFilter, setSuggestionFilter] = useState([]);
+  const [page, setPage] = useState(1);
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchResultCount, setSearchResultCount] = useState(0);
+  const [searchResultTime, setSearchResultTime] = useState(0);
+  
+
   const handleFilter = (event) => {
     let filteredSuggestions = suggestions.words.filter((word) => {
       return word.toLowerCase().includes(event.target.value.toLowerCase())
@@ -31,10 +37,17 @@ export default function MainSearchPage({ setSearch, setEnableSearch }) {
     }
   }
 
-  const handleSearch = (word) => {
+  const handleSearch = async (word) => {
     console.log(word);
     setSearch(word);
     setEnableSearch(true);
+    let now = new Date();
+    const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
+    setSearchResult(response.pages);
+    setSearchResultCount(response.total_number);
+    //setSearchResultTime(0.1);
+    let later = new Date();
+    setSearchResultTime((later - now));
   }
 
   const close = () => {
