@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MainSearchPage from './mainSearchPage';
+import MainSearchPage from './MainSearchPage'
 import { SearchResultPage } from './SearchResultPage';
 
 export default function Search() {
@@ -12,7 +12,7 @@ export default function Search() {
     <>
       {
         !enableSearch ? (
-          <MainSearchPage setSearch={setSearch} setEnableSearch={setEnableSearch} />
+          <MainSearchPage setSearch={setSearch} setEnableSearch={setEnableSearch} search={search} />
         )
           :
           (
