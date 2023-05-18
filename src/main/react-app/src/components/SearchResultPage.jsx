@@ -6,13 +6,10 @@ import suggestions from './data-suggest.json'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-export function SearchResultPage({ search, setSearch, setEnableSearch }) {
-  const [searchResult, setSearchResult] = useState([]);
-  const [searchResultCount, setSearchResultCount] = useState(0);
-  const [searchResultTime, setSearchResultTime] = useState(0);
+export function SearchResultPage({ search, setSearch, setEnableSearch, setSearchResult, setSearchResultCount, setSearchResultTime, searchResult, searchResultCount,
+  searchResultTime, page }) {
   const [inputValue, setInputValue] = useState(search);
   const [suggestionFilter, setSuggestionFilter] = useState([]);
-  const [page, setPage] = useState(1);
   // This is for the first time load or refresh page or go back to this page
 
 
@@ -32,7 +29,7 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
     // useEffect(() => {
     //   async function fetchData() {
 
-        
+
     //   }
     //   onsole.log("Fetching data...");
     //   fetchData();
@@ -52,10 +49,21 @@ export function SearchResultPage({ search, setSearch, setEnableSearch }) {
     }
   }
 
-  const handleSearch = (word) => {
-    console.log(word);
-    setSearch(word);
-    setEnableSearch(true);
+  const handleSearch = async (word) => {
+    try {
+      let now = new Date();
+      setSearch(word);
+      console.log("The is the search word of main search page: " + word);
+      const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
+      setSearchResult(response.pages);
+      setSearchResultCount(response.total_number);
+
+      let later = new Date();
+      setSearchResultTime((later - now));
+      setEnableSearch(true);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const close = () => {
