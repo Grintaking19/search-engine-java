@@ -6,13 +6,10 @@ import { useEffect, useState } from 'react'
 import ProtoTypes from 'prop-types';
 import axios from 'axios';
 
-export default function MainSearchPage({ setSearch, setEnableSearch, search }) {
+export default function MainSearchPage({ setSearch, setEnableSearch, search, setSearchResult, setSearchResultCount,
+  setSearchResultTime, page }) {
 
   const [suggestionFilter, setSuggestionFilter] = useState([]);
-  const [page, setPage] = useState(1);
-  const [searchResult, setSearchResult] = useState([]);
-  const [searchResultCount, setSearchResultCount] = useState(0);
-  const [searchResultTime, setSearchResultTime] = useState(0);
   
 
   const handleFilter = (event) => {
@@ -38,16 +35,21 @@ export default function MainSearchPage({ setSearch, setEnableSearch, search }) {
   }
 
   const handleSearch = async (word) => {
-    console.log(word);
-    setSearch(word);
-    setEnableSearch(true);
-    let now = new Date();
-    const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
-    setSearchResult(response.pages);
-    setSearchResultCount(response.total_number);
-    //setSearchResultTime(0.1);
-    let later = new Date();
-    setSearchResultTime((later - now));
+    try {
+      let now = new Date();
+      setSearch(word);
+      console.log("The is the search word of main search page: " + word);
+      const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
+      setSearchResult(response.pages);
+      setSearchResultCount(response.total_number);
+      
+      let later = new Date();
+      setSearchResultTime((later - now));      
+      setEnableSearch(true);
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   const close = () => {
