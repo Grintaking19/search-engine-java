@@ -6,6 +6,8 @@ https://en.wikipedia.org/wiki/Computer
 https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_area
 https://en.wikipedia.org/wiki/List_of_Egyptians
 https://weather.com/
+https://www.geeksforgeeks.org/
+https://www.w3schools.com/
 https://en.wikipedia.org/wiki/Nature
 https://www.tasteatlas.com/
 https://www.javatpoint.com/

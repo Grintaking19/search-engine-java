@@ -30,18 +30,20 @@ public class DBRanker
         this.urlsCollection = RankerDB.getCollection("urls"); // Retrieve all the urls and save them
     }
     // This is a function that insert in the database
-    public void insertUrlMap(Map<String, UrlData> urlMap){
+    public void insertUrlMap(Map<String, UrlData> urls){
         //First we need delete all data related to this index then add the need data(Delete many is much faster than delete one)
-        urlsCollection.deleteMany(new Document());
-        List <Document> urlEntry = new ArrayList<>();
-        for(Map.Entry<String, UrlData> entry: urlMap.entrySet())
+        this.urlsCollection.deleteMany(new Document());
+        List <Document> documents_inserted = new ArrayList<>();
+        // Loop on all the documents to be added (Not one by one such to be faster)
+        for(Map.Entry<String, UrlData> entry: urls.entrySet())
         {
-            urlEntry.add(new Document("url", entry.getKey())
+            documents_inserted.add(new Document("url", entry.getKey())
                     .append("filepath", entry.getValue().FilePath)
                     .append("popularity", entry.getValue().popularity)
                     .append("indexed", 0));
         }
-        urlsCollection.insertMany(urlEntry);
+        // Insert all
+        this.urlsCollection.insertMany(documents_inserted);
     }
     // Return all URLs data in database
     public List<UrlData> getAllURLsData() {
