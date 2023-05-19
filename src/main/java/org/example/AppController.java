@@ -22,11 +22,13 @@ import java.util.List;
 public class AppController {
 
 
-
+    @CrossOrigin(origins = "*")
     @PostMapping("/search")
     public SearchedData getSearchResults(@RequestBody searchReq req,
                                           @RequestParam("page") int page,
                                           @RequestParam("pageSize") int pageSize) throws IOException {
+        System.out.println("hi");
+        System.out.println(req);
         String query=req.query;
         QueryProcessor queryProcessor = new QueryProcessor();
         LinkedHashMap<UrlData, Double> reverseSortedMap = queryProcessor.getResults(query);

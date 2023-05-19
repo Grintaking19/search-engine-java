@@ -4,6 +4,7 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
@@ -58,8 +59,15 @@ public class DBRanker
     }
 
     public int getDocumentsSize() {
-        BasicDBObject query = new BasicDBObject();
-        int size = (int)urlsCollection.countDocuments(query);
+       // BasicDBObject query = new BasicDBObject();
+        int size = (int)urlsCollection.countDocuments();
+        System.out.println("size"+size);
         return size;
+
+        /*
+        BasicDBObject query = new BasicDBObject();
+        int size = (int) urlsCollection.countDocuments(query, new CountOptions());
+        return size;*/
+
     }
 }

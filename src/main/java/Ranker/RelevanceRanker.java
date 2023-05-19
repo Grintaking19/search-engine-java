@@ -33,8 +33,8 @@ public class RelevanceRanker
     // TF must be calculated for each document containing the word
     public double calculate_TF (int wordindex,int documentno)
     {
-        double TF = this.words.get(wordindex).data.get(documentno).count / this.words.get(wordindex).data.get(documentno).lengthOfDoc;
-        return TF;
+        return (double)this.words.get(wordindex).data.get(documentno).count / this.words.get(wordindex).data.get(documentno).lengthOfDoc;
+
     }
     // IDF is constant for each word,so I put it in an arraylist as it never changes for same word
     public void calculate_IDF (int wordindex)
@@ -87,6 +87,7 @@ public class RelevanceRanker
                 UrlData Current_URLData = new UrlData(words.get(i).data.get(j).url,words.get(i).data.get(j).filepath,words.get(i).data.get(j).popularity);
                 //popularityMap.put(words.get(i).data.get(j).url ,words.get(i).data.get(j).popularity);
                 Final_Result.put(Current_URLData,words.get(i).data.get(j).popularity * TF_IDF.get(words.get(i).data.get(j).url));
+                System.out.println(Final_Result.get(Current_URLData));
             }
 
         }
@@ -95,7 +96,7 @@ public class RelevanceRanker
     {
         List<Map.Entry<UrlData, Double>> list = new LinkedList<>(Final_Result.entrySet());
         Comparator<Map.Entry<UrlData, Double>> valueComparator = (e1, e2) -> e2.getValue().compareTo(e1.getValue());
-        Collections.sort(list, valueComparator);
+        list.sort(valueComparator);
 
         // Linked Hash map is used as it maintains the order
         LinkedHashMap<UrlData, Double> reversedorder = new LinkedHashMap<>();

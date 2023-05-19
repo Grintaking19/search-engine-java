@@ -10,6 +10,8 @@ export default function Search() {
   const [searchResultCount, setSearchResultCount] = useState(0);
   const [searchResultTime, setSearchResultTime] = useState(0);
   const [page, setPage] = useState(1);
+  const handleNextPage = () => setPage(page + 1);
+  const handlePrevPage = () => setPage(page > 1 ? page - 1 : page);
   //setSearchResult, setSearchResultCount, setSearchResultTime , searchResult, searchResultCount, searchResultTime
   console.log("search");
   return (
@@ -26,7 +28,7 @@ export default function Search() {
             <SearchResultPage search={search} setSearch={setSearch} setEnableSearch={setEnableSearch}
               setSearchResult={setSearchResult} setSearchResultCount={setSearchResultCount} setSearchResultTime={setSearchResultTime}
               searchResult={searchResult} searchResultCount={searchResultCount} searchResultTime={searchResultTime}
-              page={page} />
+              page={page} handleNextPage={handleNextPage} handlePrevPage={handlePrevPage}/>
           )
       }
 

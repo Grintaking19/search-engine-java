@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 export function SearchResultPage({ search, setSearch, setEnableSearch, setSearchResult, setSearchResultCount, setSearchResultTime, searchResult, searchResultCount,
-  searchResultTime, page }) {
+  searchResultTime, page,handleNextPage,
+                                   handlePrevPage, }) {
   const [inputValue, setInputValue] = useState(search);
   const [suggestionFilter, setSuggestionFilter] = useState([]);
   // This is for the first time load or refresh page or go back to this page
@@ -49,14 +50,26 @@ export function SearchResultPage({ search, setSearch, setEnableSearch, setSearch
     }
   }
 
+  const handlenext =async(event) => {
+    handleNextPage()
+
+    await handleSearch(inputValue)
+  }
+
+  const handlpre =async(event) => {
+    handlePrevPage()
+
+    await handleSearch(inputValue)
+  }
+
   const handleSearch = async (word) => {
     try {
       let now = new Date();
       setSearch(word);
       console.log("The is the search word of main search page: " + word);
       const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
-      setSearchResult(response.pages);
-      setSearchResultCount(response.total_number);
+      setSearchResult(response.data.pages);
+      setSearchResultCount(response.data.total_number);
 
       let later = new Date();
       setSearchResultTime((later - now));
@@ -88,25 +101,33 @@ export function SearchResultPage({ search, setSearch, setEnableSearch, setSearch
         </div>
 
         <div className={styles['search-result-container']}>
-          <p className={styles['search-result-count']}>About {searchResultCount} results ({searchResultTime} seconds)</p>
+          <p style={{color:"#646CFF"}} className={styles['search-result-count']}>About {searchResultCount} results ({searchResultTime} msec)</p>
           <div className={styles['search-result']}>
             {searchResult.map((result, index) => {
               return (
-                <div key={index} className={styles['search-result--item']}>
-                  {
-                    searchResult.map((result, index) => {
-                      return (
+               // <div key={index} className={styles['search-result--item']}>
+
+
                         <div key={index} className={styles['search-result--item-container']}>
                           <a href={result.url} className={styles['search-result--item-title']}>{result.title}</a>
-                          <p className={styles['search-result--item-content']}>{result.discription}</p>
+                          <p style = {{color: "black"}} className={styles['search-result--item-content']}>{result.discription}</p>
                         </div>
-                      )
-                    })
-                  }
-                </div>
+
+               // </div>
               )
             })}
+
+            <div style ={{marginTop: "10px"}}>
+              <button onClick={handlpre} disabled={page === 1}>
+                Previous
+              </button>
+              <button onClick={handlenext}>
+                Next
+              </button>
+            </div>
           </div>
+
+
         </div>
 
         <div className={styles["page-space-right"]}>

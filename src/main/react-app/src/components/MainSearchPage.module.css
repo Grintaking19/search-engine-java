@@ -47,11 +47,13 @@
 
 .search-bar {
   display: block;
+  background-color:  white;
   appearance: none;
   outline: none;
   border: none;
   padding: 16px;
   width: 100%;
+color: black;
   border-top-left-radius: 19px;
   border-bottom-left-radius: 19px;
   font-size: 20px;
@@ -72,6 +74,7 @@
   place-items: center;
   border-top-right-radius: 19px;
   border-bottom-right-radius: 19px;
+  color: black;
 }
 
 .search-icon:hover {
@@ -108,6 +111,7 @@
   height: 30px;
   padding: 25px;
   font-size: 20px;
+  color: black;
 }
 
 .suggestion:hover {

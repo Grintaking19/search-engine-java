@@ -39,9 +39,10 @@ export default function MainSearchPage({ setSearch, setEnableSearch, search, set
       let now = new Date();
       setSearch(word);
       console.log("The is the search word of main search page: " + word);
-      const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": search });
-      setSearchResult(response.pages);
-      setSearchResultCount(response.total_number);
+      const response = await axios.post(`http://localhost:8081/search?page=${page}&&pageSize=20`, { "query": word });
+      console.log(response);
+      setSearchResult(response.data.pages);
+      setSearchResultCount(response.data.total_number);
       
       let later = new Date();
       setSearchResultTime((later - now));      
